@@ -2,9 +2,9 @@ import io
 from datetime import date
 import pandas as pd
 import streamlit as st
-​
+
 st.set_page_config(page_title="ComplianceWorkspace — CMM Demo", page_icon="✅", layout="wide")
-​
+
 TEAM = ["R. Sharma — Principal Officer", "Priya Mehta — Compliance Officer", "Arjun Nair — Company Secretary", "Meera Das — Legal", "Vikram Joshi — Operations"]
 SEED = [
     {"id": 1, "category": "Category 1", "requirement": "Client agreement — required clauses verified", "status": "Compliant", "owner": TEAM[1], "evidence": 2, "due": "", "note": "Sample agreements reviewed against the illustrative checklist."},
@@ -22,7 +22,7 @@ SAMPLE_DOCS = [
     ("BCP_2026.pdf", "v1", "Pending approval", "2.1 MB"),
     ("Disclosure_Cert_FY26.pdf", "v1", "Approved", "560 KB"),
 ]
-​
+
 if "items" not in st.session_state:
     st.session_state["items"] = [x.copy() for x in SEED]
 if "uploads" not in st.session_state:
@@ -31,7 +31,7 @@ if "reviewer_done" not in st.session_state:
     st.session_state.reviewer_done = False
 if "po_done" not in st.session_state:
     st.session_state.po_done = False
-​
+
 st.markdown("""
 <style>
 :root{--blue:#2563eb;--ink:#111827;--line:#e5e7eb}
@@ -47,9 +47,9 @@ div[data-testid="stMetric"]{background:white;border:1px solid #e5e7eb;padding:13
 .stButton button,.stDownloadButton button{border-radius:6px;font-weight:700;min-height:40px}
 </style>
 """, unsafe_allow_html=True)
-​
+
 st.markdown("""<div class="cw-head"><div><div class="cw-brand"><span>CW</span>ComplianceWorkspace</div><div class="cw-sub">PMS • CMM readiness workflow</div></div><div class="demo">WORKING PROTOTYPE • FICTIONAL DATA</div></div>""", unsafe_allow_html=True)
-​
+
 with st.sidebar:
     st.markdown("### Arjun Capital Advisors")
     st.caption("INP000007XXX • fictional firm")
@@ -65,7 +65,7 @@ with st.sidebar:
         st.session_state.reviewer_done = False
         st.session_state.po_done = False
         st.rerun()
-​
+
 items = st.session_state["items"]
 compliant = sum(x["status"] == "Compliant" for x in items)
 partial = sum(x["status"] == "Partially compliant" for x in items)
@@ -73,7 +73,7 @@ not_started = sum(x["status"] == "Not started" for x in items)
 missing_evidence = sum(x["evidence"] == 0 for x in items)
 readiness = round((compliant / len(items)) * 100)
 blockers = sum(x["status"] != "Compliant" or x["evidence"] == 0 for x in items)
-​
+
 if page == "Readiness dashboard":
     st.title("Ready before the deadline")
     st.caption("A single view of responses, evidence, ownership and approvals.")
@@ -94,7 +94,7 @@ if page == "Readiness dashboard":
         st.markdown(f'<div class="card"><span class="tag {cls}">{x["status"]}</span><h4>{x["requirement"]}</h4><div class="muted">Owner: {x["owner"]} • Evidence: {x["evidence"]} file(s){" • Due " + x["due"] if x["due"] else ""}</div></div>', unsafe_allow_html=True)
     export_df = pd.DataFrame(items)
     st.download_button("Download internal readiness CSV", export_df.to_csv(index=False).encode("utf-8"), "cmm_readiness_demo.csv", "text/csv")
-​
+
 elif page == "CMM checklist":
     st.title("CMM checklist")
     st.caption("Edit sample responses, ownership and evidence counts. Changes remain only in this browser session.")
@@ -117,7 +117,7 @@ elif page == "CMM checklist":
                     st.session_state.uploads.append({"name": uploaded.name, "size": uploaded.size, "item": x["requirement"]})
                 st.success("Item updated for this demo session.")
                 st.rerun()
-​
+
 elif page == "Document vault":
     st.title("Document vault")
     st.caption("Sample document register plus session-only uploads. Do not upload confidential information to this prototype.")
@@ -132,7 +132,7 @@ elif page == "Document vault":
             st.session_state.uploads.append({"name": f.name, "size": f.size, "item": "General evidence"})
         st.success(f"Added {len(general)} file(s) to this session.")
         st.rerun()
-​
+
 elif page == "Review & approval":
     st.title("Review and approval")
     st.caption("Demonstrates separation between preparation, review and Principal Officer sign-off.")
@@ -150,7 +150,7 @@ elif page == "Review & approval":
         st.success("Principal Officer sign-off completed.")
     audit = pd.DataFrame([{"Step":"Preparation","Person":"Arjun Nair","Status":"Complete"},{"Step":"Review","Person":"Priya Mehta","Status":"Complete" if st.session_state.reviewer_done else "Pending"},{"Step":"Final sign-off","Person":"R. Sharma","Status":"Complete" if st.session_state.po_done else "Pending"}])
     st.download_button("Download approval trail", audit.to_csv(index=False).encode("utf-8"), "approval_trail_demo.csv", "text/csv")
-​
+
 else:
     st.title("CA feedback")
     st.caption("No meeting required. Record whether the workflow resembles real PMS compliance preparation.")
@@ -161,6 +161,5 @@ else:
         summary = f"Workflow fit: {score}\nMost useful: {', '.join(useful) or 'Not selected'}\nComments: {missing or 'None'}\n"
         st.download_button("Download feedback", summary.encode("utf-8"), "ca_feedback.txt", "text/plain")
         st.success("Feedback summary prepared. Nothing was transmitted externally.")
-​
+
 st.markdown("""<div class="legal"><b>Important:</b> This prototype uses fictional names, masked registration details and illustrative controls and dates. A qualified compliance professional must validate the exact questionnaire, applicability, deadlines, evidence and submission format against current official requirements. It does not provide legal advice, submit to any regulator or guarantee acceptance.</div>""", unsafe_allow_html=True)
-​
