@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: complianceworkspace-cmm-demo
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /_stcore/health
